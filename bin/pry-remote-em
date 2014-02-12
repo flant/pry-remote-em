@@ -37,6 +37,8 @@ OptionParser.new do |opts|
   opts.on('--sp', '--sort-port', 'sort by port') { options[:sort] = :port }
   opts.on('--ss', '--sort-ssl', 'sort by ssl support') { options[:sort] = :ssl }
 
+  opts.on("--execute CODE", String, "execute given code") {|c| options[:execute] = c }
+
   opts.parse!(ARGV)
 end 
 

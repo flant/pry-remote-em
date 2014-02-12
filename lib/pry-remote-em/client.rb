@@ -39,6 +39,10 @@ module PryRemoteEm
           @auth = lambda { a }
         end
       end
+
+      if (e = opts[:execute])
+        @execute = e.to_s.split("\n")
+      end
     end
 
     def post_init
@@ -244,7 +248,9 @@ module PryRemoteEm
     end
 
     def readline(prompt)
-      if @negotiated && !@unbound
+      if @execute and not @execute.empty?
+        send_raw(@execute.shift)
+      elsif @negotiated && !@unbound
         op       = proc { Readline.readline(prompt, !prompt.nil?) }
         callback = proc do |l|
           if '!!' == l[0..1]
