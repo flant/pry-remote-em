@@ -3,7 +3,7 @@ require 'pry-remote-em'
 begin
   require 'pry-remote-em/client/keyboard'
 rescue LoadError => e
-  warn "[pry-remote-em] unable to load keyboard depenencies (termios); interactive shell commands disabled"
+  warn "[pry-remote-em] unable to load keyboard dependencies (termios); interactive shell commands disabled"
 end
 require "pry-remote-em/client/generic"
 require 'pry'
@@ -210,9 +210,14 @@ module PryRemoteEm
       end
     end
 
+    # TODO detect if the old pager behavior of Pry is supported and use it
+    # through Pry.pager. If it's not then use the SimplePager.
+    def pager
+      @pager ||= Pry::Pager::SimplePager.new($stdout)
+    end
+
     def receive_raw(r)
-      # Pry::Helpers::BaseHelpers
-      stagger_output(r, $stdout)
+      pager.write(r)
     end
 
     def receive_unknown(j)
@@ -285,6 +290,8 @@ module PryRemoteEm
   end # module::Client
 end # module::PryRemoteEm
 
+# TODO detect if the old pager behavior of Pry is supported and use it. If it's not
+# then don't bother adding a pager accessor
 # Pry::Helpers::BaseHelpers#stagger_output expects Pry.pager to be defined
 class Pry
   class << self
